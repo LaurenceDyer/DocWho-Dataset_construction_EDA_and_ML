@@ -73,7 +73,7 @@ for index, row in links.iterrows():
 	#Removing more stage directions which are hidden next to character specifications
 	#There were a LOT of these, but it was generally not safe to regex over these
 	#specific sets, due to the fact that occasionlly genuine locations are mistakenly
-	#followed by a ":". It took about an 30 minutes to find them all. Bleh.
+	#followed by a ":". It took about 30 minutes to find them all. Bleh.
 	annoying_patterns = [r" \[(OC)\]",r" \[(on scanner)\]",r" \[(on radio)\]",r" \[(on monitor)\]",r" \[(on laptop)\]",r" \[(on camera)\]",r" \[(on screen)\]",r" \[(on machine)\]",
 						 r" \[(on viewscreen)\]",r" \[(on tv screen)\]",r" \[(on TV)\]",r" \[(TV)\]",r" \[(PC)\]",r" \[(previously)\]",r" \[(on film)\]",r" \[(on telephone)\]",
 						 r" \[(on television)\]",r" \[(on holoimager)\]",r" \[(on ball)\]",r" \[(on phone)\]",r" \[(on horseback)\]",r" \[(on tannoy)\]",r" \[(projection)\]",
