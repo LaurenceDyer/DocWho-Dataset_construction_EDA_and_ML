@@ -6,6 +6,13 @@ output:
     toc: true
     theme: united
 ---
+
+```{css, echo=FALSE}
+.fullwidth img {
+  max-width: none;
+}
+```
+
 # 0. Introduction - About Dataset
 
 All scripts scraped from an online repository: http://www.chakoteya.net/DoctorWho/index.html
@@ -32,7 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 }
 ```
 
-# 1. Data Cleaning and Exploratory Analysis 
+# 1. **Data Cleaning and Exploratory Analysis**
 
 ```{r Data input, include=F}
 require(treemap)
@@ -59,45 +66,11 @@ require(wordcloud)
 require(tm)
 require(quanteda)
 
+gc()
+
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-allEps <- read.csv("all_Episodes.csv",sep="\t")[,c(2:9)]
-allEps$Series_Episode <- paste("S",allEps$SeriesNo,"E",allEps$EpisodeNo,sep="")
-allEps$Index <- as.numeric(rownames(allEps))
-
-#Fix major typos that present major problems later on
-allEps[allEps$Character=="",]$Character <- "UNKNOWN"
-
-#Disambiguation of characters aided by users of the r/DoctorWHo subreddit.
-
-allEps[allEps$Character=="BARRAS",]$Character <- "BARRASS"
-allEps[allEps$Character=="REDKANG",]$Character <- "REDKANGS"
-allEps[allEps$Character=="GUARD-MASTERS",]$Character <- "GUARD-MASTER"
-allEps[allEps$Character=="OPERATIVE-MASTERS",]$Character <- "OPERATIVE-MASTER"
-allEps[allEps$Character=="ALLDALEKS",]$Character <- "DALEK"
-allEps[allEps$Character=="BLACK" & !(allEps$Series_Episode %in% c("S15E5","S31E10")),]$Character <- "BLACKDALEK"
-
-
-allEps[allEps$Character=="ANNE" & allEps$Series_Episode %in% c("S5E5"),]$Character <- "ANNETRAVERS"
-
-allEps[allEps$Character=="TRAVERS" & allEps$Series_Episode %in% c("S5E5","S5E2"),]$Character <- "PROFTRAVERS"
-allEps[allEps$Character=="TRAVERS" & allEps$Series_Episode %in% c("S23E3"),]$Character <- "CAPTTRAVERS"
-
-allEps[allEps$Character=="JACKSON" & allEps$Series_Episode %in% c("S15E5"),]$Character <- "CMNDRJACKSON"
-allEps[allEps$Character=="JACKSON" & allEps$Series_Episode %in% c("S20E5"),]$Character <- "SAILRJACKSON"
-
-allEps[allEps$Character=="WILLIAMS" & allEps$Series_Episode %in% c("S7E4"),]$Character <- "PETRAWILLIAMS"
-
-allEps[allEps$Character=="TYLER" & allEps$Series_Episode %in% c("S10E1"),]$Character <- "DRTYLER"
-
-allEps[allEps$Character=="RUTH" & allEps$Series_Episode %in% c("S4E9"),]$Character <- "RUTHMAXTIBLE"
-allEps[allEps$Character=="RUTH" & allEps$Series_Episode %in% c("S9E5"),]$Character <- "RUTHINGRAM"
-
-
-
-#Delete pilot episode
-allEps <- allEps[allEps$Series_Episode != "S1E0",]
-allEps <- allEps[allEps$Series_Episode != "S17E6",]
+allEps <- read.csv("all_Episodes.csv")[,c(2:11)]
 
 #Input IMDB ratings and runtimes
 classic_ratings <- read.csv("Classic_Seasons_IMDB.csv")[,c(2:5)]
@@ -118,9 +91,12 @@ modern_wiki <- modern_wiki[!modern_wiki$Title %in% c("","Series","Special","Part
                                                      "Special (2016)","Special (2014)","Special (2012)","Special (2011)",
                                                      "Special (2015)","Special (2017)"),]
 
+
 ```
 
-Before we get started, we must remedy the issue of classic episodes being recorded on IMDB according to their individualized parts/viewing slots, rather than as whole episodes. We'll combine this data to generate single episodes of these parts, matching our script source and maintaining complete episode narratives for some of our downstream analysis, e.g. episode sentiment:
+In this report we will perform a statistical analysis on the scripts of Doctor Who episodes aired betwen 1963 and 2022.
+
+After viewing the initial input data, we see immediately that we must remedy the issue of classic episodes being recorded on IMDB according to their individualized parts/viewing slots, rather than as whole episodes. We'll combine this data to generate single episodes of these parts, matching our script source and maintaining complete episode narratives for some of our downstream analysis, e.g. episode sentiment. The perform this using data scraped from our third source, Wikipedia.
 
 ```{r Before we start, include=FALSE}
 
@@ -141,27 +117,27 @@ epLines <- epLines[!grepl("^\\s+$",epLines$Script),]
 #And merge back with all other lines
 allEps <- rbind(allEps,epLines)
 allEps <- allEps[order(allEps$Index),]
+```
 
-#Now, let's assign the IMDB parts to their actual episode
-#This information dredged from wikipedia
+```{r Wikipedia_Input1, message=FALSE, warning=FALSE}
 
-#Sep number of parts and viewers
+#The most important information we need here is the number of parts of each episode
 noParts <- ddply(classic_wiki, .(Title), .fun = nrow)
+#...but we will also record data such as the mean viewers, calculated from the individual viewership of each "part".
 viewers <- aggregate(`Viewers(millions)`~Title,classic_wiki, FUN = function(x) mean(as.numeric(x)))
 
-#Flatten df and merge in number of parts and viewers
+#Flatten df and merge title, number of parts and viewers
 classic_wiki <- classic_wiki[!duplicated(classic_wiki$Title),c(1,2,3,4,5,6)]
 classic_wiki$Index <- c(1:length(classic_wiki$Title))
 classic_wiki2 <- merge(merge(classic_wiki,viewers,by="Title"),noParts,by="Title")
-
 classic_wiki2 <- classic_wiki2[order(classic_wiki2$Index),]
 classic_wiki2$Episode <- as.numeric(classic_wiki2$Episode)
 
-#Fix missing episodes
+#Fix missing episodes - Some episodes are edgecases and have a peculiar episode number that differs between our sources, we must correct them
 classic_wiki2[131,]$Episode <- 7
 classic_wiki2 <- classic_wiki2[-130,c(1,2,3,5,6,7,8,9)]
 
-#Correct season number
+#Correct season number - This information is easier to calculate than to import
 seasonNo = 0
 for(i in c(1:length(classic_wiki2$Title))){
   if(classic_wiki2[i,]$Episode==1){
@@ -170,10 +146,16 @@ for(i in c(1:length(classic_wiki2$Title))){
   
   classic_wiki2[i,]$Season <- seasonNo
 }
-
+```
+```{r Wikipedia_Input2, include=F}
 classic_wiki2$Series_Episode <- paste("S",classic_wiki2$Season,"E",classic_wiki2$Episode,sep="")
 classic_wiki2 <- classic_wiki2[!classic_wiki2$Series_Episode=="S17E6",]
+```
 
+We need to assign a part vector to each episode in our ratings df.
+
+```{r Wikipedia_Parts, message=FALSE, warning=FALSE}
+#We generate a vector we will use to merge the rows of our IMBD ratings dataframe
 partsVec <- c()
 j <- 1
 for(i in c(1:length(classic_wiki2$V1))){
@@ -182,11 +164,15 @@ for(i in c(1:length(classic_wiki2$V1))){
 }
 
 classic_ratings$Parts <- partsVec
+
+
+#Aggregate our data over each part, leaving us a single row for a full episode
 classic_ratings$Runtime <- as.numeric(gsub(" minutes","",classic_ratings$Runtime))
 classic_ratings[classic_ratings$Season==20 & classic_ratings$Episode==23,]$Runtime <- 90
 classic_ratings_rat <- aggregate(Rating~Parts,classic_ratings,mean)
 classic_ratings_run <- aggregate(Runtime~Parts,classic_ratings,sum)
-
+```
+```{r Wikipedia_input2, include=F}
 classic_ratings_part <- classic_ratings[!duplicated(classic_ratings$Parts),]
 classic_ratings_part$Episode <- classic_wiki2$Episode
 
@@ -196,6 +182,11 @@ classic_ratings_part <- merge(classic_ratings_part,classic_ratings_run,by="Parts
 classic_ratings2 <- classic_ratings_part
 
 classic_ratings2$Series_Episode <- paste("S",classic_ratings2$Season,"E",classic_ratings2$Episode,sep="")
+```
+
+And after a little more processing we can merge them together. Great! Done. We'll perform a similar (But much simpler) process with our modern episodes until we create a dataframe with all the relevant information for each episode:
+
+```{r Wikipedia_Input3, message=FALSE, warning=FALSE}
 
 classic_ext <- merge(classic_wiki2,classic_ratings2,by="Series_Episode")
 classic_ext <- classic_ext[,c(1:6,8,13,14)]
@@ -204,9 +195,7 @@ colnames(classic_ext)[3:4] <- c("Season","Episode")
 
 ```
 
-We can do this by counting how many parts each episode is assigned on wikipedia, and then use this to average out viewership and sum up runtime to get an individual rating and runtime for each episode:
-
-```{r Before we start3 - Modern Eps, echo=FALSE, message=FALSE}
+```{r Before we start3 - Modern Eps, echo=FALSE, message=FALSE, warning=FALSE}
 
 #Ah, it seems like wikipedia and our script source disagree about the numbering of the modern run's episodes
 #We'll have to fix that manually...
@@ -331,6 +320,8 @@ When it comes to rating we see that "Orphan 55", an episode relating to climate 
 
 Utopia - The first episode of the multi-episode season 29 finale, holds the title of highest rated episode. The episode features the return of the long-time series villain "The Master". "City of Death" aired at prime-time in the middle of a workers' strike that would take ITV, the BBC's main source of competition, off air for several weeks.
 
+This all seems to agree with expectations and is not indicative of a large underlying error.
+
 Let's see which writers were the most popular over the series' run:
 
 ```{r Writer Who, echo = FALSE, message=FALSE, fig.align='center', fig.width=12}
@@ -378,12 +369,12 @@ writerDat <- merge(writ_rate_view,writ_count)
 
 ```
 
-Steven Moffat and Russell T. Davies prove to be some of the most popular writers by episode rating, while also being the longest lasting writers by episode number at 48 and 31 episode credits respectively.
+Steven Moffat and Russell T. Davies prove to be some of the most popular writers by episode rating, while also being the longest lasting writers by episode number at 48 and 31 episode credits respectively. Again, we see nothing to indicate wide ranging errors.
 
 
 ## Character and Location - Overview
 
-To get a sense of how deep some of our script-input probles run, we'll need to examine the data and try to get an overview of the potential data cleaning we have to perform. Let's start by examining our two most rigid columns, "Character" and "Location".
+To get a sense of how deep some of our script-input problems might run, we'll need to examine the data and try to get an overview of the potential data cleaning we have to perform. Let's start by examining our two most rigid columns, "Character" and "Location".
 
 
 ```{r Overview of potential errors, echo = F}
@@ -409,7 +400,7 @@ knitr::kable(charlocs4kable[c(1:6),], booktabs = T, align = rep("c",4)) %>%
   kable_styling(position = "center")
 
 ```
-Looks great! What's more iconic than the doctor and his TARDIS?
+Looks reasonable. What's more iconic than the doctor and his TARDIS?
 
 However, we can assume that there may be many errors lying lower down this frequency list. Let's see how many characters and locations appear only once - They are quite likely to be recorded in error.
 
@@ -427,7 +418,7 @@ datatable(dt1, options = list(dom="pt", pageLength = 5))
 </div>
 
 <div style="width: 50%; float: left;">
- ```{r DT2, echo = FALSE}
+```{r DT2, echo = FALSE}
 datatable(dt2, options = list(dom="pt", pageLength = 5))
 ```
 </div>
@@ -501,12 +492,13 @@ double_lines <- allEps[grepl("-AND-",allEps$Character),]
 allEps <- allEps[!allEps$Character %in% double_lines$Character,]
 
 #We can separate out the rows easily with tidyr
-double_lines_sep <- tidyr::separate_rows(double_lines,1,sep="-AND-")
+double_lines_sep <- separate_rows(double_lines,"Character",sep="-AND-")
 
 #Looks like sometimes we have "DALEKS1-AND-3", we generally don't care about numbered characters so we'll treat those as one DALEK
 double_lines_sep <- double_lines_sep[!double_lines_sep$Character %in% as.character(c(1:9)),]
 
 #Shove 'em back in and re-order chronologically
+double_lines_sep <- double_lines_sep[!double_lines_sep$Character=="",]
 allEps <- rbind(allEps,double_lines_sep)
 allEps <- allEps[order(allEps$Index, decreasing = F),]
 
@@ -533,6 +525,7 @@ for(doublet in doublets){
 
 #Now let's remove those triplets and create our interaction frame
 doublets <- t(as.data.frame(Filter(function(x) length(x) < 3, doublets)))
+
 rownames(doublets) <- c(1:length(doublets[,1]))
 ```
 
@@ -542,12 +535,13 @@ doublet_interaction <- dplyr::count(as.data.frame(doublets),V1,V2)
 #We'll make a quick plot here, but we only care about interactions more than a couple of times, otherwise it's just too many to visualise
 doublets_two <- doublet_interaction[doublet_interaction$n > 2,]
 
-par(cex=1, mar = c(0,0,0,0))
+
 circos.clear()
-circos.par(gap.after = c(rep(5, length(unique(doublets_two[[1]]))-1), 5, 
-                         rep(5, length(unique(doublets_two[[2]]))-1), 5))
+
+circos.par(gap.after=2)
 
 chordDiagram(doublets_two[,c(2,1,3)], annotationTrack = "grid", preAllocateTracks = 1)
+
 circos.trackPlotRegion(track.index = 1, panel.fun = function(x, y) {
   xlim = get.cell.meta.data("xlim")
   ylim = get.cell.meta.data("ylim")
@@ -606,7 +600,7 @@ treemap(head(char_vals,50), index="cat", vSize="pct", title = "Who has the most 
 ```
 </div>
 <div style="width: 50%; float: left;">
- ```{r Verbiosity2, echo = FALSE}
+```{r Verbiosity2, echo = FALSE}
 char_vals2 <- char_vals[!grepl("DOCTOR",char_vals$cat),]
 
 treemap(head(char_vals2,50), index="cat", vSize="pct", title="... Other than the doctor?")
@@ -684,13 +678,15 @@ grid.arrange(g1,g2,g3,ncol=3)
 
 
 ```
-POLO wins the most lines per episode what a screenhog! Clocking in at ~330 lines in his only episode, Marco Polo had the most individual lines of any character. The doctor doesn't quite make the cut, but after limiting to only repeat characters, we see that not only is the doctor the most prolific character, in 99% of episodes, he's also the most verbose repeat character.
+POLO wins the most lines per episode - What a screenhog! Clocking in at ~330 lines in his only episode, Marco Polo had the most individual lines of any character. The doctor doesn't quite make the cut, but after limiting to only repeat characters, we see that not only is the doctor the most prolific character, in 99% of episodes, he's also the most verbose repeat character.
 
-Words per line gives us some interesting responses - SINGER and MUSIC, ANDREWMARR, TV, NARRATOR and NEWSMAN are all big winners here.  
+Words per line gives us some interesting responses - SINGER and MUSIC, ANDREWMARR, TV, NARRATOR and NEWSMAN are all big winners here, giving us long, uninterrupted lines of monologuing.
+
+## Character and rating - Overview
 
 ### The Many Doctors
 
-The doctor them self, all 13 (12) of them. Over the course of the series, many actors and writers have taken a stab at writing the doctor. How has this changed over time? Are older doctors more verbose? Do newer doctors get more lines? Lets see if we can find any clear trends.   
+The doctors themselves, all 13 (12) of them. Over the course of the series, many actors and writers have taken a stab at writing the doctor. How has this changed over time? Are older doctors more verbose? Do newer doctors get more lines? Lets see if we can find any clear trends.   
 
 ```{r ManyDocs, echo=FALSE, fig.width=15, fig.height=4, message=FALSE}
 
@@ -755,6 +751,9 @@ And let's take a quick peek at which doctors were the most popular with viewers:
 popDoc <- allEps[,c(1,6,15)]
 
 popDoc <- popDoc[!duplicated(popDoc$Series_Episode),]
+
+
+
 popDoc$DoctorWho <- gsub("Doctor_","DOC",popDoc$DoctorWho)
 
 popDoc$DoctorWho <- factor(popDoc$DoctorWho, levels = paste("DOC",c(1:7,9:13),sep=""))
@@ -769,6 +768,56 @@ DOC10 - David Tennant takes the top spot, with none of the classic doctors excep
 
 DOC13 - Jodie Whittaker, is certainly not a fan favourite, with the average DOC13 episode having a score that would be considered low for most previous docs.
 
+### Fan Favourites - Character Lines and Rating
+
+One way to try to analyse whether or not a character, or combinations of characters, are popular, is to use a series of plots to examine correlations between the number of lines a character has and that episodes' rating. Because of the vast amount of characters we could graph here, we'll select some the doctor's main companions from the modern series to see who is the most popular.
+
+```{r Char_Rating, echo=F, message=FALSE, warning=FALSE, fig.width=14,fig.height=6,fig.align='center'}
+
+allEps_charR <- allEps
+allEps_charR[grepl("DOCTOR",allEps_charR$Character),]$Character <- "DOCTOR"
+
+allEps_charR_lines <- aggregate(Script~Series_Episode+Character, allEps_charR,length)
+
+allEps_charR <- allEps_charR[!duplicated(paste(allEps_charR$Series_Episode,allEps_charR$Character)),]
+
+allEps_charR_lines <- merge(allEps_charR_lines,allEps_charR[,c(1,15)],by="Series_Episode")
+
+chars_choose <- c("AMY","CLARA","ROSE","RORY","YASMIN","GRAHAM","MARTHA","BILL","DALEK","MASTER","DOCTOR","CYBERMAN")
+allEps_charR_lines <- allEps_charR_lines[allEps_charR_lines$Character %in% chars_choose,]
+allEps_charR_lines <- allEps_charR_lines[!duplicated(paste(allEps_charR_lines$Series_Episode,allEps_charR_lines$Character)),]
+
+#Determine p-values of regression
+p.vals = sapply(unique(allEps_charR_lines$Character), function(i) {
+  coef(summary(lm(Rating ~ Script, data=allEps_charR_lines[allEps_charR_lines$Character==i,])))[2,4]
+})
+
+lineTots <- aggregate(Script~Character,allEps_charR_lines, FUN = function(x) max(x)/2)
+
+p.vals <- as.data.frame(p.vals)
+p.vals$Character <- rownames(p.vals)
+p.vals <- merge(p.vals,lineTots,by="Character")
+p.vals$Rating <- 5
+p.vals$p.vals <- signif(p.vals$p.vals,2)
+
+p.vals[p.vals$Character=="GRAHAM",]$Script <- 55
+p.vals[p.vals$Character=="YASMIN",]$Script <- 50
+
+allEps_charR_lines$Character <- factor(allEps_charR_lines$Character, levels = 
+                                         c("ROSE","MARTHA","AMY","CLARA","RORY","YASMIN","GRAHAM","BILL","DOCTOR","MASTER","DALEK","CYBERMAN"))
+
+p.vals$Character <- factor(p.vals$Character, levels = 
+                                         c("ROSE","MARTHA","AMY","CLARA","RORY","YASMIN","GRAHAM","BILL","DOCTOR","MASTER","DALEK","CYBERMAN"))
+
+suppressWarnings(ggplot(allEps_charR_lines, aes(x=Script,y=Rating)) + geom_point(aes(colour=Character),alpha = 0.3) +
+  geom_line(stat = "smooth", method="lm",se=F, alpha = 0.3) +
+  theme_minimal() + geom_text(data=p.vals, aes(label=paste("p.val = ",p.vals,sep=""))) +
+  theme(legend.position = "none") +
+  facet_wrap(~Character, scales = "free_x"))
+
+
+```
+Okay! Interesting! We actually do see that an increasing number of lines for Rose and Martha is associated with a lower episode rating. Of course, this is no longer significant after multiple adjustment, but perhaps represents an interesting trend.
 
 # 2. Network Analysis
 
@@ -812,7 +861,7 @@ char_tab_modern <- as.data.frame(table(locs_for_graph_modern$Character))
 top_modern <- head(char_tab_modern[order(char_tab_modern$Freq, decreasing = T),],26)
 
 #Remove computer, it's not one character
-top_modern <- top_modern[c(1:23,25,26),]
+top_modern <- top_modern[-23,]
 
 locs_for_graph_modern <- locs_for_graph_modern[locs_for_graph_modern$Character %in% top_modern$Var1,]
 
@@ -828,6 +877,13 @@ locs_for_graph_modern_cast <- locs_for_graph_modern %>% dplyr::count(Scene,Chara
 rownames(locs_for_graph_classic_cast) <- gsub("TOR","",rownames(locs_for_graph_classic_cast))
 rownames(locs_for_graph_modern_cast) <- gsub("TOR","",rownames(locs_for_graph_modern_cast))
 
+dannycheck <- allEps_for_docs
+dannycheck <- allEps_for_docs[,c(1,2,3)]
+dannycheck$eploc <- paste(dannycheck$Series_Episode,dannycheck$Location)
+
+
+dannycheck <- dannycheck[dannycheck$eploc %in% unique(dannycheck[dannycheck$Character=="DANNY",]$eploc),]
+
 ```
 
 <div style="width: 100%;">
@@ -838,7 +894,7 @@ plot(hclust(dist(locs_for_graph_classic_cast, method = "manhattan")), main = "Cl
 </div>
 
 <div style="width: 50%; float: left;">
- ```{r clus2, echo = FALSE}
+```{r clus2, echo = FALSE}
 plot(hclust(dist(locs_for_graph_modern_cast, method = "manhattan")), main = "Modern Episodes Dendrogram", xlab = "")
 ```
 </div>
@@ -917,12 +973,14 @@ Here we will colour each community individually, the size of the connecting line
 locs_for_graph_all <- locs_for_graph[,c(2,6)]
 
 char_tab_all <- as.data.frame(table(locs_for_graph_all$Character))
-top_all <- head(char_tab_all[order(char_tab_all$Freq, decreasing = T),],100)
+top_all <- head(char_tab_all[order(char_tab_all$Freq, decreasing = T),],125)
 
 #Care must be taken to remove unnamed characters and disambiguate some characters with the same name
 top_all <- top_all[!top_all$Var1 %in% c("COMPUTER","MAN","WOMAN","GUARD","COMMANDER","COMMANDANT",
                                         "CHIEF","CONTROLLER","GOVERNOR","PILOT","CAPTAIN","SOLDIER",
-                                        "LEADER"),]
+                                        "LEADER","MONK","SERGEANT","DUGGAN"),]
+
+top_all <- head(top_all[order(top_all$Freq, decreasing = T),],100)
 
 locs_for_graph_all <- locs_for_graph_all[locs_for_graph_all$Character %in% top_all$Var1,]
 
@@ -930,8 +988,6 @@ locs_for_graph_all <- locs_for_graph_all[!(grepl("S3E",locs_for_graph_all$Scene)
 locs_for_graph_all <- locs_for_graph_all[!(grepl("S2E",locs_for_graph_all$Scene) & grepl("JENNY",locs_for_graph_all$Character)),]
 locs_for_graph_all <- locs_for_graph_all[!(grepl("S30E|S29E|S36E",locs_for_graph_all$Scene) & grepl("JENNY",locs_for_graph_all$Character)),]
 locs_for_graph_all[(grepl("S32E|S33E|S34E|S35E|S36E",locs_for_graph_all$Scene) & grepl("JENNY",locs_for_graph_all$Character)),]$Character <- "JENNYFLINT"
-
-
 
 locs_for_graph_all <- locs_for_graph_all[!duplicated(paste(locs_for_graph_all$Character,locs_for_graph_all$Scene)),]
 
@@ -949,14 +1005,14 @@ diag(int_all) <- 0
 
 write.csv(file = "Interactions_All.csv", x = int_all)
 
-
-allEps_for_docs
+docEps <- allEps_for_docs[grepl("DOCTOR",allEps$Character),]
+docEps <- aggregate(Script~Character,docEps,length)
 
 
 ```
 
-```{r, fig.align="center", fig.cap=c("Gephi Network (All Episodes)"), echo=FALSE, include=TRUE, out.width="1397px", out.height="1000px"}
-knitr::include_graphics("./Doc_Who.png")
+```{r, fig.align="center", fig.cap=c("Gephi Network (All Episodes)"), echo=FALSE, include=TRUE, out.width="1299px", out.height="901px"}
+knitr::include_graphics("./Doc_Who_Network.png")
 ```
 This turned out to be a really effective way of visualising the over-arching character interactions of the series.
 
@@ -1117,16 +1173,8 @@ top_feats_df <- as.data.frame(sapply(top_feats,
 
 top_feats_ord <- top_feats_df[,c(match(c(top_chars$Character),colnames(top_feats_df)))]
 
-DT::datatable(top_feats_ord, options = list(
-  pageLength=8, scrollX='400px', doms = "t"))
-
-
 ```
-As we scroll though these columns, we see that "Doctor" and "Time" basically come up for most characters. 
-
-We do get some nice, character-specific hits regardless, such as "Exterminate", "Obey", "Prison" and "Locate doctor" for the Daleks, "Power" and "Kill" for The Master, but let's pursue the inverse document frequency strategy.
-
-Removing character names from this list is a tough decision - Really, this just gives us information about who a character spends time with, but it does mean we might inadevertently remove terms like "Dalek", which might be interesting.
+We will also aim to remove character names. Removing character names from this list is a tough decision - Really, this just gives us information about who a character spends time with, but it does mean we might inadevertently remove terms like "Dalek", which might be interesting.
 
 This is achieved easily via quanteda's tfidf function.
 
@@ -1146,17 +1194,398 @@ top_feats_df_tf <- as.data.frame(sapply(top_feats_tf,
 top_feats_ord_tf <- top_feats_df_tf[,c(match(c(top_chars$Character),colnames(top_feats_df_tf)))]
 
 DT::datatable(top_feats_ord_tf, options = list(
-  pageLength=8, scrollX='400px', doms = "t"))
+  pageLength=10, scrollX='400px', doms = "t"))
 
 
 ```
-Interesting! We see "haroon" pop up from DOC3's attempts at speaking an alien language, we see "Shush" from DOC1's attempts to keep his companions quiet. DOC5 references the tardis most often. Looking down the list, we see more classic words - "Spoiler" and "SWeetie" for River. Rose, Martha and Donn all have the word "god" in their lists. Susan has "grandfather", her common nicknme for the doctor, etc. Looks good!
+Interesting! We see "haroon" pop up from DOC3's attempts at speaking an alien language, we see "Shush" from DOC1's attempts to keep his companions quiet. DOC5 references the tardis most often. Looking down the list, we see some classics - "Spoiler" and "SWeetie" for River. Rose, Martha and Donna all have the word "god" in their lists. Susan has "grandfather", her common nicknme for the doctor, etc. Looks good!
 
 ## Sentiment Analysis
 
-The most common form of 
+One of the most common form of analyses for large scale text data is sentiment analysis. We'll begin our sentiment analysis in python and import the data below for visualization.
 
-```{r Sentiment Analysis}
+For this analysis in python, we'll be using the NLTK package and the VADER sentiment analyzer.
+
+This process involves stripping all punctuation from the text, separating the script into lists of strings, giving a PoS (Part of Sentence) tag to each word in all script lines, such as "noun" or "verb", applying a lemmatizer to the newly tagged words and finally applying the VADER sentiment analyzer to each tagged word in each line.
+
+Generally, sentiment analysis might be best applied to product reviews or tweets, which are less likely to have complex language than a TV script or a book. That may make this approach a little imperfect, but we need to do most of this data prep for downstream ML applications. In this case, sentiment is measured from -1 (Most negative) to +1 (Most positive).
+
+Let's start by looking at the ten most positive lines we can find in the text:
+
+```{r Sentiment Analysis output, echo=F}
+
+allEps_for_docs$Index <- c(1:length(allEps_for_docs$Script))
+
+sentimentOutput <- allEps_for_docs[,c(4,10,2,3,1)]
+
+write.csv(sentimentOutput,file = "sentimentScript.csv")
+
+```
+
+```{r Sentiment Input, echo=FALSE}
+
+script_sentiment <- read.csv("scripts_with_Sentiment.csv",sep="\t")[,c(1,6,10)]
+
+allEps_for_docs <- merge(allEps_for_docs,script_sentiment,by="Index")
+
+allEps_for_docs$Script <- gsub("Part One","",gsub("Part Two","",gsub("Part Three","",gsub("Part Four","",allEps_for_docs$Script))))
+
+mostPos <- head(allEps_for_docs[order(allEps_for_docs$compound,decreasing = T),],20)[,c(2,3,4,5,20)]
+
+mostPos <- mostPos[c(1,3,6,7,8,10,13,14,15,20),]
+
+mostPos$Script <- lapply(mostPos$Script, str_trunc, 400)
+
+DT::datatable(mostPos, options = list(
+  pageLength=3, scrollX='400px', doms = "t"))
+
+```
+
+Wow! Very positive. I'm full of hope.
+
+And the ten most negative lines:
+
+```{r Sentiment Input2, echo=FALSE}
+
+mostNeg <- head(allEps_for_docs[order(allEps_for_docs$compound,decreasing = F),],10)[,c(2,3,4,5,20)]
+mostNeg$Script <- lapply(mostNeg$Script, str_trunc, 400)
+
+DT::datatable(mostNeg, options = list(
+  pageLength=3, scrollX='400px', doms = "t"))
+
+```
+Kill, kill, kill, pain, pain, pain. Evil robots malfunctioning - What could be more negative than that?
+
+How about the sentiments of individual episodes? Individual characters? Scenes?
+
+To try and make sure we don't select edge cases/outliers, we'll try to limit characters and scenes to those that have/contain more than just a few lines.
+
+```{r Episode sentiment, echo=F}
+
+epSentiment <- aggregate(compound~Title,allEps_for_docs,mean)
+charSentiment <- aggregate(compound~Character,allEps_for_docs,mean)
+
+allEps_for_docs$Scene <- paste(allEps_for_docs$Series_Episode,allEps_for_docs$Location,sep=":")
+allEps_for_docs$SceneNumber <- cumsum(!duplicated(allEps_for_docs$Scene))
+
+sceneSentiment <- aggregate(compound~Scene,allEps_for_docs,mean)
+
+charSentiment <- na.omit(charSentiment[!charSentiment$Character == "[",])
+charSentiment <- charSentiment[charSentiment$Character %in% char_tab_all[char_tab_all$Freq > 200,]$Var1,]
+
+lines_in_scene <- aggregate(Script~Scene,allEps_for_docs,length)
+sceneSentiment <- sceneSentiment[sceneSentiment$Scene %in% lines_in_scene[lines_in_scene$Script > 10,]$Scene,]
+
+epSentiment <- epSentiment[order(epSentiment$compound),]
+charSentiment <- charSentiment[order(charSentiment$compound),]
+sceneSentiment <- sceneSentiment[order(sceneSentiment$compound),]
+
+rownames(epSentiment) <- c(1:length(epSentiment$compound))
+rownames(charSentiment) <- c(1:length(charSentiment$compound))
+rownames(sceneSentiment) <- c(1:length(sceneSentiment$compound))
+
+epTable <- rbind(head(epSentiment,3),tail(epSentiment,3))
+charTable <- rbind(tail(charSentiment,3),head(charSentiment,3))
+sceneTable <- rbind(tail(sceneSentiment,3),head(sceneSentiment,3))
+
+epTable <- epTable[order(epTable$compound),]
+charTable <- charTable[order(charTable$compound),]
+sceneTable <- sceneTable[order(sceneTable$compound),]
+
+colnames(epTable) <- c("","epSentiment")
+colnames(charTable) <- c("Character","charSentiment")
+colnames(sceneTable) <- c("Scene","sceneSentiment")
+
+epTable <- epTable[rev(rownames(epTable)),]
+charTable <- charTable[rev(rownames(charTable)),]
+sceneTable <- sceneTable[rev(rownames(sceneTable)),]
+
+kable(cbind(cbind(epTable,charTable),sceneTable), booktabs = T, align = rep("c",7)) %>% 
+  kable_styling(position = "center")
 
 
 ```
+Quite surprising that DOC1 has such a high mean sentiment! With him having so many lines, he really had to be consistently positive to make the cut. Looking through his speeches we see references to good, love and he has a very high frequency for the word "yes", all very positive sentiments. As for K9, this is perhaps a little surprising, but his references to "Failure", "Danger", "Dead" and his high frequency for "Negative" and "No" leave him with a very low mean sentiment. "Dalek" and "Black Dalek" being bottom of the list is no surprise!
+
+## Sentiment and other parameters
+
+Sentiment, if it's as accurate over the entire dataset as it is in the extremes above, might be a good predictor of episode rating or viewership. We can check this using a simple linear model.
+
+We do have one sentiment outlier, the episode "Heaven Sent" has a negative sentiment five times greater than any other and it's probably worth ignoring for the linear model.
+
+```{r Sentiment Correlation1, echo=F, message=FALSE, fig.width=12,fig.height=4,fig.align='center'}
+
+epSentiment2 <- merge(epSentiment,allEps_for_docs[,c(8,11,14,15,18)],by="Title")
+epSentiment2 <- epSentiment2[!duplicated(epSentiment2$Title),]
+
+epSentiment2$`Viewers(millions)` <- as.numeric(epSentiment2$`Viewers(millions)`)
+
+#Remove epSentiment outlier
+epSentiment2 <- epSentiment2[epSentiment2$Title != '"Heaven Sent"',]
+
+g1 <- ggplot(epSentiment2, aes(x=`Viewers(millions)`,y=Rating)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+              geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("pval=8.04e-7")
+g2 <- ggplot(epSentiment2, aes(x=compound,y=Rating)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+              geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("pval=0.307")
+g3 <- ggplot(epSentiment2, aes(x=compound,y=`Viewers(millions)`)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+              geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("pval=0.529")
+
+suppressWarnings(grid.arrange(g1,g2,g3,ncol=3))
+
+#Episode viewership vs rating
+
+invisible(summary(lm(`Viewers(millions)`~Rating,epSentiment2)))
+
+#Episode sentiment vs rating
+invisible(summary(lm(compound~Rating,epSentiment2)))
+
+#Episode sentiment vs viewership
+invisible(summary(lm(compound~`Viewers(millions)`,epSentiment2)))
+
+
+```
+Well, we see a clear correlation between viewership and rating, as expected, but no clear correlation between sentiment and rating.
+
+What about character sentiment? Does the doctor's sentiment correlate well with other characters from the same episode?
+
+```{r Doc Sentiment Corr, echo=F,  message=FALSE, fig.width=12,fig.height=4,fig.align='center'}
+
+char_ePsentiment <- aggregate(compound~Title+Character,allEps_for_docs,mean)
+char_ePsentiment <- na.omit(char_ePsentiment[!char_ePsentiment$Character == "[",])
+
+doc_epSentiment <- char_ePsentiment[grepl("DOCTOR",char_ePsentiment$Character),]
+oth_epSentiment <- char_ePsentiment[!grepl("DOCTOR",char_ePsentiment$Character),]
+
+doc_epSentiment$Character <- "DOC"
+oth_epSentiment <- aggregate(compound~Title,oth_epSentiment,mean)
+oth_epSentiment$Character <- "OTH"
+oth_epSentiment <- oth_epSentiment[,c(1,3,2)]
+
+char2_epSentiment <- merge(doc_epSentiment,oth_epSentiment,by="Title")[,c(1,3,5)]
+colnames(char2_epSentiment) <- c("Title","Doc_Sentiment","Oth_Sentiment")
+
+char2_epSentiment <- merge(char2_epSentiment,allEps_for_docs[,c(8,11,14,15,18)],by="Title")
+char2_epSentiment <- char2_epSentiment[!duplicated(char2_epSentiment$Title),]
+char2_epSentiment$`Viewers(millions)` <- as.numeric(char2_epSentiment$`Viewers(millions)`)
+char2_epSentiment <- char2_epSentiment[char2_epSentiment$Title != '"Heaven Sent"',]
+
+
+g1 <- ggplot(char2_epSentiment, aes(x=Doc_Sentiment,y=Oth_Sentiment)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+        geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("0.226")
+g2 <- ggplot(char2_epSentiment, aes(x=Doc_Sentiment,y=Rating)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+              geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("0.006")
+g3 <- ggplot(char2_epSentiment, aes(x=Doc_Sentiment,y=`Viewers(millions)`)) + geom_point(stroke = 1, shape=21, size = 2, aes(fill=as.factor(Era))) + 
+              geom_smooth(colour="red",method="lm", se = F) + theme_minimal() + theme(legend.position = "none") + ggtitle("0.630")
+
+invisible(summary(lm(Doc_Sentiment~Oth_Sentiment,char2_epSentiment)))
+invisible(summary(lm(Doc_Sentiment~Rating,char2_epSentiment)))
+invisible(summary(lm(Doc_Sentiment~`Viewers(millions)`,char2_epSentiment)))
+
+suppressWarnings(grid.arrange(g1,g2,g3,ncol=3))
+
+
+```
+Well, no correlation between character sentiment and doctor sentiment, and while we're here we can also test if the doctor's sentiment alone is correlated with viewership or rating, and we see that it is indeed very slightly correlated with rating (p=0.006), though this is largely driven by the two lowest sentiment episodes, which also have very high ratings:  
+
+* "The Day of the Doctor"
+* "The Magician's Apprentice"
+
+However, "The Magician's Apprentice" has a surprisingly low viewer count, suppressing this effect in viewership. More than likely these correlations are totally spurious. In the next section, we will attempt to see if we can learn anything further from these futures by attempting regression on a set of features which includes the above.
+
+
+# 4. Machine Learning Techniques
+## Naive Bayes Classifier
+### Classification
+
+In this section, we will attempt to implement a naive bayes machine learning algorithm as a classifier for a set of characters with a large number of lines. Given a script line as input, our classifier will attempt to return as output the character who is most likely to have said that line, or a similar line. We'd like to see both a high accuracy in classifying real script lines the classifier has not seen before, and a high subjective accuracy in classifying newly written lines.
+
+Again, due to convenience, most of this analysis will be carried out via python, using sci-kit learn for the implementation of the multinomial naive bayes algorithm itself.
+
+We will run our algorithm both based on the TF-IDF adjusted frequency, and only consider characters with a substantial number of words, over 5000.
+
+```{r Naive Bayes output, echo=F}
+
+chars_for_bayes <- char_tab_all[char_tab_all$Freq > 5000,]$Var1
+allEps_for_bayes <- allEps_for_docs[allEps_for_docs$Character %in% chars_for_bayes,]
+allEps_for_bayes <- allEps_for_bayes[,c(3,5,19)]
+
+allEps_for_bayes <- allEps_for_bayes[allEps_for_bayes$Script_lemm != "",]
+
+write.csv(x = allEps_for_bayes, file = "allDat_for_Bayes.csv")
+
+```
+
+```{r Naive Bayes output2, echo = FALSE, fig.align='center', out.height="554", out.width="1475"}
+
+knitr::include_graphics("./naiveBayes.png")
+
+```
+
+Okay, so 49% accuracy isn't great, and is likely the result of our relatively poor class balance and lowish number of lines, in addition to the fact that many lines are quite short. Imbalance in our classes' (The doctors) lines leads to a very large bias in our weights, that is visible in our low precision. Still, with 7 categories it is much better than a random guess. Hyperparameter tuning was performed, but was only able to generate a ~0.5% increase in accuracy.
+
+Most of our bias is in Doctor4. See the 0.39 precision and 0.75 recall above? Our classifier is generating a large amount of Doc4 false positives - Perhaps if we remove him we will remove some of our bias at the cost of losing this potential prediction?
+
+```{r Naive Bayes no DOC4 output, echo=F}
+
+allEps_for_bayes <- allEps_for_bayes[allEps_for_bayes$Character != "DOCTOR4",]
+
+write.csv(x = allEps_for_bayes, file = "allDat_for_Bayes_noFour.csv")
+
+```
+
+```{r Naive Bayes output3, echo = FALSE, fig.align='center', out.height="245", out.width="798"}
+
+knitr::include_graphics("./naive_bayes2.png")
+
+```
+
+A moderate 4% increase in accuracy, even after tuning for the best value for alpha, hardly seems worth it. We might attempt to use other models, such as a LinearSVC or a RandomForest or Logistic Regression. Let's see what accuracy we manage to work our way up to after doing a brief tuning on each model:
+
+```{r Bayes Comp, echo=F}
+
+scores <- c(0.49,0.53,0.50,0.53,0.43,0.46,0.48,0.51)
+names <- c("Naive_Bayes(All)","Naive_Bayes(no4)","LinearSVC(All)","LinearSVC(no4)","RandomForest(All)","RadnomForest(no4)","LogReg(All)","LogReg(no4)")
+
+names(scores) <- names
+scores
+
+
+```
+
+No improvement.
+
+Attempting to use n-grams, where we would consider combinations of 2 or 3+ words, was largely ineffective in increasing accuracy of the model. Using n-grams between 1 and 3 resulted in a 52% accuracy, while (1,2) n-grams resulted in a 54% accuracy.
+
+Not great! The best result was our reduced naive bayes classifier using (1,2) n-grams at 54%. It is fairly likely that there aren't enough differences in the doctor's individual speech patterns to generate a clear classification. Again, 54% is really not ideal. Furthermore, the above classification approaches, even using TF-IDF and n-grams, are context ignorant of the meaning of words, and many phrases with potentially opposite meanings may be interpreted very similarly by our classifier. If we wanted to develop a more accurate classifier, the majority of the work would likely be in reducing the total feature space using a manually curated dictionary and performing intensive optimisation of paramters.
+
+### Classifying Eras
+
+While we have 12 doctors (A large number of categories considering our data size), we only have 2 eras. Employing similar strategies to those above, we might be able to generate a more accurate classifying model that can accurately predict the era (Classic or modern) a line is likely to have originated from. We'll go through similar steps as above, testing logistic regression, naive bayes, randomforest and SVM approaches with hyperparameter tuning. 
+
+We must first subsample our data, as vectorising 240,000 lines is too much for my machine to handle. We will use 30,000 lines from each of the modern and classic eras as our data source.
+
+From our initial test, we identify that the most effective classifier was based on logistic regression (At 68% accuracy baseline) and the worst performer was a random forest classifier (At 62% accuracy at baseline). Many attempts were made to try and increase the accuracy above 80%, but unfortunately the maximum accuracy achieved was 72%. This was achieved using un-scaled, count vectorized data, selecting for the best 10,000 features from (1,1) ngrams. 
+
+When testing the model against the un-subsampled data, we again get a 72% accuracy, with a much higher precision for classic texts. Oh well! Code for the generation of this model, and all others, is available via github.
+
+```{r Naive Bayes output4, echo = FALSE, fig.align='center', out.height="338", out.width="528"}
+
+knitr::include_graphics("./naive_bayes_era.png")
+
+```
+
+## Rating regression
+
+Machine learning is frequently used in an attempt to predict ratings of enjoyment of episodes/books/tweets/search results using previous ratings data. In this brief section we will attempt to train a logistic regression model to predict an episode's rating based on a feature space we can construct from our dataset.
+
+### Feature Selection
+
+In this case, unlike our other machine learning feature spaces, we are not using character dialogue as our input and must design and select our own features. In order for our model to eventually converge on a reasonable predictive accuracy, picking features that do not contain too much noise while also explaining some of the variance in episode rating is likely the most important step.
+
+Features that we will choose are as follows:
+
+* Number of characters, locations and scenes that feature
+* Runtime 
+* Total number of words and lines in episode
+* Writer and director
+
+```{r Feature Selection, include=FALSE}
+
+ratingReg <- allEps_for_docs[,c(2,3,4,5,12,13,15,16,17,20,21)]
+writ_total <- as.data.frame(table(ratingReg[!duplicated(ratingReg$Series_Episode),]$Writer))
+dir_total <- as.data.frame(table(ratingReg[!duplicated(ratingReg$Series_Episode),]$Director))
+
+ratingReg[ratingReg$Writer %in% writ_total[writ_total$Freq < 5,]$Var1,]$Writer <- "Other"
+ratingReg[ratingReg$Director %in% dir_total[dir_total$Freq < 5,]$Var1,]$Director <- "Other"
+
+number_of_Chars <- aggregate(Character~Series_Episode,ratingReg,FUN=function(x) length(unique(x)))
+number_of_Locs <- aggregate(Location~Series_Episode,ratingReg,FUN=function(x) length(unique(x)))
+number_of_Scenes <- aggregate(Scene~Series_Episode,ratingReg,FUN=function(x) length(unique(x)))
+number_of_lines <- aggregate(Script~Series_Episode,ratingReg,FUN=function(x) length(x))
+number_of_words <- aggregate(WordsInLine~Series_Episode,ratingReg,FUN=function(x) sum(x))
+
+ratingReg <- ratingReg[!duplicated(ratingReg$Series_Episode),c(1,5:8)]
+
+ratingReg <- merge(merge(merge(merge(merge(ratingReg,
+                                     number_of_Chars,by="Series_Episode"),
+                                     number_of_Locs,by="Series_Episode"),
+                                     number_of_Scenes,by="Series_Episode"),
+                                     number_of_lines,by="Series_Episode"),
+                                     number_of_words,by="Series_Episode")[,c(1,2,3,5:10,4)]
+
+
+write.csv("Rating_Reg.csv", x = ratingReg)
+
+
+```
+
+Two of these features, writer and director, are categorical. As such, we'll need to use a way to encode them for input into the middle. Another concern with these two features is that there are many writers/directors with a low episode number, just one or two. It is likely beneficial to group many of these together under an "Other" category.
+
+We'll attempt to create our regression model using the python sklearn toolkit, and we'll test out both the Lasso and ElasticNet models.
+
+We have used target encoding to encode our nominal categories, and after hyperparameter tuning of the parameter alpha using K-fold cross validation, we manage to achieve a MAE of roughly -0.608. Applying this to test data the model has not seen before, we achieved a 0.806, with an r2 of 0.25, which is not incredible, but would probably allow us to differentiate episodes between the worst episodes and the 9/10s. Let's examine some of the coefficients of our Lasso model:
+
+```{r LASSO Coefs, echo=F}
+
+coefs <- c("Director" = 0.68759,
+  "Writer" = 0.748027,
+  "Runtime" = 0.046891,
+  "Characters" = 0.034326,
+  "Locations" = 0.047393,
+  "Scenes" = 0,
+  "Lines" = 0.048360,
+  "WordsPerLine" = -0.146544)
+
+print(coefs)
+```
+Perhaps unsurprisingly, writer and director dominate. This is essentially what we might have imagined given our previous exploratory analysis and the clear distinction in mean-rating for each writer (and each director). A small negative coefficient of words per line is somewhat interesting. Clearly, however, the driving factors and best predictors behind rating are the director/writer, weighted by the success of their previous episodes. 
+
+
+```{r LASSO res, echo = FALSE, fig.align='center', out.height="518", out.width="1577"}
+
+knitr::include_graphics("./lasso.png")
+
+```
+## Text Generation
+### LSTM
+
+```{r LSTM output, echo=F}
+
+allEps_for_LSTM <-  allEps_for_docs[allEps_for_docs$Character %in% c("DALEK","BLACKDALEK"),]
+
+write.csv(allEps_for_LSTM[,c(3,5)], file = "Dalek_Speech.csv")
+
+
+```
+Text prediction is considered the continuous generation of next-word predictions produced from the trailing words in a script line. We'll start by training our model on a single character. For this use of LSTM, a character with a very recognisable speech pattern is useful (and fun), so our first target will be one of Dr Who's central villains, the Dalek.
+
+Using the Dalek has one major advantage - We are very likely to be able to recognise if the neural net is producing lines that sound "Daleky", but this comes at the major cost of potential repetition. Daleks always say "exterminated" after "you will be", and often repeat this phrase in a single line. This is likely to lead our generation algorithm to get stuck in a loop if it is trained poorly.
+
+Our neural network is designed as follows:
+
+* One input layer, with total nodes equal to the maximum length of tokens in any line
+* One layer to account for embedding for integer conversion
+* One LSTM layers (200 nodes)
+* One dropout layer (0.1/10%) in an attempt to prevent overfitting on the input sequences
+* One output layer
+
+On our first epoch, the categorical crossentropy loss function reported a loss of 6.4, reducing to a loss of ~1. After model generation, we provide 5 seed phrases and use the model to generate more words until it reaches a length of 10 words.
+
+When running the model for 100 epochs, we note that our loss function is still reducing with successive runs, which means that further training may be a possible strategy for improving generation.
+
+```{r LSTM output2, echo = FALSE, fig.align='center', out.height="297", out.width="1366"}
+
+knitr::include_graphics("./text_generation_One.png")
+
+```
+
+Hm, those sound... Okay. "You are a traitor to the daleks you must be exterminated" is a direct quote from S9E1 and "I am a soldier..." is also roughly similar to  direct line from S27E6. It seems like we have a bit of overfitting happening and, as above, our loss function is still reducing so we could attempt the use of more epochs. As such, we are likely to see some improvement if we tune some of our hyperparamters, specifically the number of epochs (Let's take 200) and the number of sequential nodes of our LSTM (We'll also go for 200). Here we can see the change of our loss function over time, and the texts produced based on our seed phrases. 
+
+```{r LSTM output3, echo = FALSE, fig.align='left', out.height="828", out.width="1896"}
+
+knitr::include_graphics("./LSTM_Dalek.png")
+
+```
+
+Some of the phrases here are identical, so it's probable we cannot generalise past them without a massive increase in training data. We also see a slightly peculiar loss trajectory at roughly 125 epochs. This is almost certainly due to some kind of large batch variation. Our batch size was 32 (As default), and most likely increasing the batch size would help to solve this problem.
+

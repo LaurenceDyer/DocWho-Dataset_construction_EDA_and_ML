@@ -1,0 +1,332 @@
+"","Series_Episode","Director","Writer","Runtime","Character","Location","Scene","Script","WordsInLine","Rating"
+"1","S10E1","Other","Bob Baker, Dave Martin",98,16,19,19,1062,10989,8.225
+"2","S10E2","Barry Letts","Robert Holmes",98,12,11,11,1179,11205,7.775
+"3","S10E3","Other","Malcolm Hulke",144,30,30,30,1298,16190,7.53333333333333
+"4","S10E4","David Maloney","Terry Nation",142,14,23,23,1116,11012,7.35
+"5","S10E5","Michael E. Briant","Other",154,25,34,34,1534,14957,8.01666666666667
+"6","S11E1","Other","Robert Holmes",97,17,19,19,901,10919,7.975
+"7","S11E2","Other","Malcolm Hulke",149,29,32,32,1279,13512,7.38333333333333
+"8","S11E3","Michael E. Briant","Terry Nation",98,13,21,21,651,6949,7.275
+"9","S11E4","Other","Brian Hayles",147,17,20,20,1250,14608,6.65
+"10","S11E5","Barry Letts","Other",148,38,38,38,1369,13135,7.58333333333333
+"11","S12E1","Christopher Barry","Other",97,11,23,23,783,9105,7.425
+"12","S12E2","Other","Robert Holmes",99,12,11,11,1034,9039,8.125
+"13","S12E3","Other","Bob Baker, Dave Martin",49,9,10,10,395,3728,7.3
+"14","S12E4","David Maloney","Terry Nation",143,24,23,23,979,12348,8.96666666666667
+"15","S12E5","Michael E. Briant","Other",96,18,20,20,877,8934,7.025
+"16","S13E1","Douglas Camfield","Other",96,20,29,29,754,7177,8.175
+"17","S13E2","David Maloney","Other",94,13,18,18,694,6097,7.5
+"18","S13E3","Other","Other",99,14,22,22,657,6261,8.45
+"19","S13E4","Barry Letts","Terry Nation",97,16,34,34,762,7111,7.4
+"20","S13E5","Christopher Barry","Other",99,9,10,10,770,8351,8.275
+"21","S13E6","Douglas Camfield","Other",144,24,32,32,1203,11480,8.55
+"22","S14E1","Other","Other",100,17,19,19,752,8248,7.4
+"23","S14E2","Other","Bob Baker, Dave Martin",99,17,27,27,861,7985,7.775
+"24","S14E3","David Maloney","Robert Holmes",94,19,14,14,701,7687,8.4
+"25","S14E4","Pennant Roberts","Other",100,16,27,27,902,8158,7.55
+"26","S14E5","Michael E. Briant","Other",96,24,18,18,1016,9056,8.475
+"27","S14E6","David Maloney","Robert Holmes",146,21,30,30,1225,13107,8.58333333333333
+"28","S15E1","Other","Other",96,12,12,12,974,8918,8.075
+"29","S15E2","Other","Bob Baker, Dave Martin",92,18,16,16,809,7175,6.95
+"30","S15E3","Other","Other",95,13,15,15,820,8179,7.475
+"31","S15E4","Pennant Roberts","Robert Holmes",100,17,20,20,1150,10641,7.6
+"32","S15E5","Other","Bob Baker, Dave Martin",89,21,24,24,944,7006,6.1
+"33","S15E6","Other","Other",150,22,32,32,1525,12698,7.43333333333333
+"34","S16E1","Other","Robert Holmes",100,14,19,19,1091,11226,7.45
+"35","S16E2","Pennant Roberts","Other",102,17,21,21,1173,11327,7.775
+"36","S16E3","Other","Other",95,13,21,21,1149,10069,7.675
+"37","S16E4","Other","Other",98,15,30,30,938,8625,7.35
+"38","S16E5","Other","Robert Holmes",91,12,11,11,991,10069,6.625
+"39","S16E6","Other","Bob Baker, Dave Martin",149,19,31,31,1565,14261,7.08333333333333
+"40","S17E1","Other","Terry Nation",100,14,21,21,700,6823,7.35
+"41","S17E2","Other","Other",99,19,20,20,930,9749,8.775
+"42","S17E3","Christopher Barry","Other",97,16,17,17,1102,10418,6.875
+"43","S17E4","Other","Other",96,16,27,27,996,9667,6.95
+"44","S17E5","Other","Other",101,13,20,20,1030,9030,6.2
+"45","S18E1","Other","Other",87,17,13,13,689,6557,6.5
+"46","S18E2","Other","Other",87,16,18,18,784,6489,6.475
+"47","S18E3","Other","Other",92,18,14,14,787,6348,7.225
+"48","S18E4","Peter Moffatt","Other",94,16,20,20,850,8184,7.525
+"49","S18E5","Other","Other",94,14,15,15,727,6611,7.3
+"50","S18E6","Other","Other",98,13,14,14,872,9233,7.7
+"51","S18E7","Other","Other",99,22,20,20,843,7818,7.8
+"52","S19E1","Other","Other",96,14,25,25,768,7552,7.175
+"53","S19E2","Other","Other",97,11,12,12,883,8320,6.7
+"54","S19E3","Other","Other",98,13,15,15,1118,8440,7.225
+"55","S19E4","Peter Moffatt","Other",96,14,30,30,893,7653,7.35
+"56","S19E5","Ron Jones","Other",50,18,22,22,523,3730,7.05
+"57","S19E6","Other","Other",96,23,14,14,1235,8659,8.275
+"58","S19E7","Ron Jones","Other",98,22,25,25,1147,10106,6.025
+"59","S1E1","Other","Other",96,13,14,14,820,8884,6.875
+"60","S1E2","Christopher Barry","Terry Nation",169,16,23,23,1584,16595,7.54285714285714
+"61","S1E3","Other","David Whitaker",47,4,3,3,445,4311,6.95
+"62","S1E4","Other","Other",172,19,41,41,1649,17152,7.08571428571429
+"63","S1E5","Other","Terry Nation",147,19,33,33,1333,15075,7.1
+"64","S1E6","Other","Other",98,13,8,8,1038,9893,7.425
+"65","S1E7","Other","Other",150,18,16,16,1651,18154,6.66666666666667
+"66","S1E8","Other","Other",147,28,30,30,1371,15594,6.65
+"67","S20E1","Ron Jones","Other",99,19,38,38,897,8040,6.875
+"68","S20E2","Other","Other",98,16,18,18,995,9607,6.9
+"69","S20E3","Peter Moffatt","Other",99,18,26,26,985,8464,7.65
+"70","S20E4","Other","Other",100,15,25,25,810,5986,6.25
+"71","S20E5","Other","Other",97,17,18,18,1046,8622,7.75
+"72","S20E6","Other","Other",50,12,12,12,520,4364,6.35
+"73","S20E7","Peter Moffatt","Other",90,31,29,29,909,8426,8.1
+"74","S21E1","Pennant Roberts","Other",97,16,22,22,840,6942,6.375
+"75","S21E2","Other","Other",50,11,15,15,521,4396,6.95
+"76","S21E3","Ron Jones","Other",99,15,22,22,892,8931,6.975
+"77","S21E4","Other","Other",93,22,30,30,871,7008,7.7
+"78","S21E5","Other","Other",97,18,24,24,800,8099,7.25
+"79","S21E6","Graeme Harper","Robert Holmes",101,21,21,21,878,10034,8.525
+"80","S21E7","Peter Moffatt","Other",99,21,19,19,1067,10074,5.35
+"81","S22E1","Other","Other",89,19,21,21,883,8041,6.85
+"82","S22E2","Ron Jones","Other",90,18,20,20,808,8710,7.6
+"83","S22E3","Other","Other",90,18,22,22,836,8310,6.75
+"84","S22E4","Peter Moffatt","Robert Holmes",135,16,27,27,1222,12852,7.3
+"85","S22E5","Pennant Roberts","Other",90,19,18,18,970,9174,5.5
+"86","S22E6","Graeme Harper","Other",90,19,18,18,882,9472,7.65
+"87","S23E1","Other","Robert Holmes",98,17,19,19,1205,12598,6.875
+"88","S23E2","Ron Jones","Other",100,15,24,24,973,10410,7.025
+"89","S23E3","Chris Clough","Other",98,21,23,23,979,10239,6.8
+"90","S23E4","Chris Clough","Robert Holmes",55,10,10,10,499,5780,7.05
+"91","S24E1","Other","Other",97,15,13,13,742,7670,5.325
+"92","S24E2","Other","Other",98,21,19,19,902,10634,6.35
+"93","S24E3","Chris Clough","Other",73,22,30,30,590,6880,5.86666666666667
+"94","S24E4","Chris Clough","Other",75,19,21,21,696,7483,6.53333333333333
+"95","S25E1","Other","Other",100,31,36,36,971,8295,8.4
+"96","S25E2","Chris Clough","Other",75,22,10,10,821,7295,6.86666666666667
+"97","S25E3","Chris Clough","Other",86,17,22,22,686,6582,6.4
+"98","S25E4","Other","Other",100,19,22,22,803,8509,7.15
+"99","S26E1","Other","Other",101,25,33,33,1045,7997,7.325
+"100","S26E2","Other","Other",75,14,18,18,804,7756,7.13333333333333
+"101","S26E3","Other","Other",100,21,34,34,935,8601,8.05
+"102","S26E4","Other","Other",75,20,29,29,557,5328,7.43333333333333
+"103","S27E1","Other","Russell T Davies",45,13,23,23,288,3477,7.5
+"104","S27E10","James Hawes","Steven Moffat",45,16,16,16,473,4540,9.1
+"105","S27E11","Joe Ahearne","Russell T Davies",45,9,13,13,391,4880,7.1
+"106","S27E12","Joe Ahearne","Russell T Davies",45,25,13,13,486,5065,8.6
+"107","S27E13","Joe Ahearne","Russell T Davies",45,13,11,11,329,3736,9
+"108","S27E2","Euros Lyn","Russell T Davies",45,11,14,14,312,3907,7.5
+"109","S27E3","Euros Lyn","Mark Gatiss",45,9,15,15,418,4688,7.5
+"110","S27E4","Other","Russell T Davies",45,24,22,22,317,4242,7
+"111","S27E5","Other","Russell T Davies",45,19,24,24,427,4327,7
+"112","S27E6","Joe Ahearne","Other",45,14,13,13,397,4095,8.6
+"113","S27E7","Other","Russell T Davies",45,14,13,13,371,4537,7.1
+"114","S27E8","Joe Ahearne","Other",45,13,11,11,287,3855,8.3
+"115","S27E9","James Hawes","Steven Moffat",45,19,17,17,393,3777,9
+"116","S28E0","James Hawes","Russell T Davies",NA,20,21,21,489,5573,NA
+"117","S28E1","James Hawes","Russell T Davies",60,22,17,17,419,4261,8
+"118","S28E10","Other","Russell T Davies",45,12,15,15,367,4777,8.7
+"119","S28E11","Euros Lyn","Other",45,15,13,13,431,4801,6.2
+"120","S28E12","Graeme Harper","Russell T Davies",45,27,14,14,384,4296,5.9
+"121","S28E13","Graeme Harper","Russell T Davies",45,17,14,14,422,3929,8.5
+"122","S28E2","Euros Lyn","Russell T Davies",45,12,17,17,354,4229,7.4
+"123","S28E3","James Hawes","Toby Whithouse",45,16,25,25,393,4321,7.7
+"124","S28E4","Euros Lyn","Steven Moffat",45,11,15,15,337,4493,8.2
+"125","S28E5","Graeme Harper","Other",45,20,26,26,455,5133,9.3
+"126","S28E6","Graeme Harper","Other",45,15,19,19,387,3998,7.7
+"127","S28E7","Euros Lyn","Mark Gatiss",45,19,23,23,360,4129,7.9
+"128","S28E8","James Strong","Other",45,14,11,11,447,4327,6.7
+"129","S28E9","James Strong","Other",45,9,11,11,444,4643,8.6
+"130","S29E0","Euros Lyn","Russell T Davies",NA,18,21,21,480,5279,NA
+"131","S29E1","Charles Palmer","Russell T Davies",60,15,26,26,396,4345,7.6
+"132","S29E10","Other","Steven Moffat",45,10,22,22,389,3891,9.2
+"133","S29E11","Graeme Harper","Russell T Davies",45,19,14,14,473,4663,9.8
+"134","S29E12","Other","Russell T Davies",45,29,28,28,447,5097,8.7
+"135","S29E13","Other","Russell T Davies",45,21,17,17,330,4469,8.7
+"136","S29E2","Charles Palmer","Other",45,20,15,15,400,4839,8
+"137","S29E3","Other","Russell T Davies",45,21,16,16,491,5228,7.6
+"138","S29E4","James Strong","Other",45,22,17,17,417,4385,8
+"139","S29E5","James Strong","Other",45,13,11,11,422,4273,7
+"140","S29E6","Other","Other",45,11,19,19,436,4036,6.9
+"141","S29E7","Graeme Harper","Chris Chibnall",45,13,19,19,512,3961,6.6
+"142","S29E8","Charles Palmer","Other",45,20,24,24,380,4378,7.3
+"143","S29E9","Charles Palmer","Other",45,16,21,21,358,4212,8.9
+"144","S2E1","Other","Other",74,10,24,24,735,8211,6.86666666666667
+"145","S2E2","Other","Terry Nation",149,23,31,31,1257,12969,7.98333333333333
+"146","S2E3","Christopher Barry","David Whitaker",51,7,10,10,432,4904,7.25
+"147","S2E4","Christopher Barry","Other",95,21,29,29,890,9879,7.45
+"148","S2E5","Other","Other",146,15,18,18,949,9684,5.93333333333333
+"149","S2E6","Douglas Camfield","David Whitaker",97,31,24,24,839,10307,6.95
+"150","S2E7","Other","Other",92,14,18,18,865,9953,7.05
+"151","S2E8","Other","Terry Nation",147,28,35,35,1261,11685,7.2
+"152","S2E9","Douglas Camfield","Other",97,11,19,19,706,8719,7.7
+"153","S30E0","James Strong","Russell T Davies",NA,27,15,15,648,6451,NA
+"154","S30E1","James Strong","Russell T Davies",71,19,25,25,351,3986,7.6
+"155","S30E10","Other","Russell T Davies",45,12,9,9,837,7321,9.4
+"156","S30E11","Graeme Harper","Russell T Davies",45,28,24,24,449,5160,9
+"157","S30E12","Graeme Harper","Russell T Davies",49,36,23,23,483,4461,8.9
+"158","S30E13","Graeme Harper","Russell T Davies",45,24,23,23,486,5174,9.1
+"159","S30E14","Other","Russell T Davies",63,18,23,23,354,4431,9.2
+"160","S30E15","James Strong","Other",NA,23,14,14,596,5922,NA
+"161","S30E16","Graeme Harper","Other",NA,16,22,22,492,5174,NA
+"162","S30E17","Euros Lyn","Russell T Davies",NA,29,20,20,389,4773,NA
+"163","S30E18","Euros Lyn","Russell T Davies",NA,34,25,25,461,4877,NA
+"164","S30E2","Other","Other",48,17,13,13,484,4972,7.7
+"165","S30E3","Graeme Harper","Other",45,17,13,13,422,4336,8
+"166","S30E4","Douglas Mackinnon","Other",48,26,20,20,479,4976,8
+"167","S30E5","Douglas Mackinnon","Other",45,20,14,14,403,4254,7.4
+"168","S30E6","Other","Other",45,8,15,15,406,4403,7.5
+"169","S30E7","Graeme Harper","Other",45,14,20,20,438,5173,7.6
+"170","S30E8","Euros Lyn","Steven Moffat",45,14,8,8,471,4501,7.7
+"171","S30E9","Euros Lyn","Steven Moffat",43,19,19,19,389,4511,9.3
+"172","S31E1","Other","Steven Moffat",65,20,19,19,511,5869,8.7
+"173","S31E10","Other","Other",47,11,19,19,329,4217,9.3
+"174","S31E11","Other","Other",43,17,14,14,494,4513,8.1
+"175","S31E12","Toby Haynes","Steven Moffat",49,24,15,15,381,3907,9
+"176","S31E13","Toby Haynes","Steven Moffat",54,14,21,21,394,4606,9.1
+"177","S31E2","Other","Steven Moffat",42,15,19,19,310,4046,7.6
+"178","S31E3","Other","Mark Gatiss",42,16,11,11,431,4147,6.7
+"179","S31E4","Other","Steven Moffat",42,13,13,13,460,4546,8.6
+"180","S31E5","Other","Steven Moffat",43,8,9,9,502,4757,8.5
+"181","S31E6","Other","Toby Whithouse",49,16,23,23,344,3813,7
+"182","S31E7","Other","Other",45,10,15,15,402,4597,8.1
+"183","S31E8","Other","Chris Chibnall",44,11,12,12,382,4026,7.2
+"184","S31E9","Other","Chris Chibnall",46,14,15,15,435,4364,7.4
+"185","S32E0","Toby Haynes","Steven Moffat",NA,21,12,12,625,6036,NA
+"186","S32E1","Toby Haynes","Steven Moffat",62,20,19,19,482,4331,8.5
+"187","S32E10","Nick Hurran","Other",43,11,17,17,471,4187,7
+"188","S32E11","Nick Hurran","Toby Whithouse",47,15,19,19,304,4198,8.4
+"189","S32E12","Other","Other",49,19,23,23,460,5005,8
+"190","S32E13","Other","Steven Moffat",46,27,18,18,412,4878,7.6
+"191","S32E2","Toby Haynes","Steven Moffat",44,23,23,23,410,4528,8.8
+"192","S32E3","Other","Other",47,13,11,11,369,3850,8.8
+"193","S32E4","Other","Other",46,10,9,9,463,5135,6.7
+"194","S32E5","Other","Other",47,16,17,17,374,3694,9
+"195","S32E6","Other","Other",43,21,20,20,392,3724,7.1
+"196","S32E7","Other","Steven Moffat",46,29,17,17,398,4687,7.3
+"197","S32E8","Other","Steven Moffat",49,23,17,17,481,4400,9.1
+"198","S32E9","Other","Mark Gatiss",49,16,22,22,384,3767,8
+"199","S33E0","Other","Steven Moffat",NA,14,24,24,529,4964,NA
+"200","S33E1","Nick Hurran","Steven Moffat",59,14,22,22,495,4233,7.2
+"201","S33E10","Other","Other",41,7,12,12,328,3440,7.1
+"202","S33E11","Other","Other",45,13,14,14,358,3716,7.6
+"203","S33E12","Saul Metzstein","Mark Gatiss",47,16,20,20,317,3483,7.4
+"204","S33E13","Other","Other",47,14,17,17,374,4139,7.2
+"205","S33E14","Saul Metzstein","Steven Moffat",47,24,16,16,393,4359,7.3
+"206","S33E15","Nick Hurran","Steven Moffat",44,37,30,30,750,7909,9
+"207","S33E16","Other","Steven Moffat",NA,25,14,14,574,5745,NA
+"208","S33E2","Saul Metzstein","Chris Chibnall",49,13,15,15,466,4577,8.5
+"209","S33E3","Saul Metzstein","Toby Whithouse",45,15,9,9,276,3379,7.3
+"210","S33E4","Douglas Mackinnon","Chris Chibnall",44,22,26,26,307,4344,7.3
+"211","S33E5","Nick Hurran","Steven Moffat",41,12,19,19,351,3897,7.4
+"212","S33E6","Saul Metzstein","Steven Moffat",44,21,23,23,580,5475,9
+"213","S33E7","Other","Steven Moffat",60,23,20,20,455,4087,8.3
+"214","S33E8","Other","Other",45,8,10,10,278,3125,7.8
+"215","S33E9","Douglas Mackinnon","Mark Gatiss",46,10,10,10,391,3555,7.3
+"216","S34E1","Other","Steven Moffat",61,19,20,20,689,6837,8.3
+"217","S34E10","Other","Other",43,20,17,17,408,5009,8.4
+"218","S34E11","Rachel Talalay","Steven Moffat",45,11,15,15,447,4455,6.1
+"219","S34E12","Rachel Talalay","Steven Moffat",47,25,15,15,457,5099,8.5
+"220","S34E13","Other","Steven Moffat",57,12,15,15,697,6351,7.8
+"221","S34E2","Other","Other",76,19,26,26,557,4595,7.8
+"222","S34E3","Other","Mark Gatiss",47,17,12,12,477,4477,7.6
+"223","S34E4","Douglas Mackinnon","Steven Moffat",46,10,10,10,470,4497,7
+"224","S34E5","Douglas Mackinnon","Other",47,15,17,17,396,4118,8.8
+"225","S34E6","Other","Other",45,19,23,23,531,5292,7.9
+"226","S34E7","Other","Other",45,8,9,9,396,4700,7.2
+"227","S34E8","Other","Other",45,14,17,17,497,5903,6.7
+"228","S34E9","Douglas Mackinnon","Other",46,13,19,19,465,4574,8.4
+"229","S35E1","Other","Steven Moffat",61,33,21,21,436,4622,8.2
+"230","S35E10","Other","Other",45,20,13,13,376,4754,5.8
+"231","S35E11","Rachel Talalay","Steven Moffat",46,3,8,8,41,2944,8.5
+"232","S35E12","Rachel Talalay","Steven Moffat",55,11,14,14,482,5181,9.5
+"233","S35E13","Douglas Mackinnon","Steven Moffat",60,19,15,15,778,6558,8.6
+"234","S35E2","Other","Steven Moffat",49,10,10,10,410,4235,8.4
+"235","S35E3","Other","Toby Whithouse",50,12,11,11,314,4524,8.4
+"236","S35E4","Other","Toby Whithouse",46,11,16,16,225,3449,8.2
+"237","S35E5","Other","Other",42,14,10,10,355,4236,8
+"238","S35E6","Other","Other",48,20,17,17,429,4904,7.4
+"239","S35E7","Other","Other",45,27,25,25,295,3535,7.4
+"240","S35E8","Other","Other",45,9,20,20,370,4070,7.7
+"241","S35E9","Other","Mark Gatiss",46,10,8,8,408,4328,8.4
+"242","S36E0","Other","Steven Moffat",NA,18,17,17,664,6123,NA
+"243","S36E1","Other","Steven Moffat",61,11,17,17,431,4003,7.3
+"244","S36E10","Charles Palmer","Other",43,15,12,12,429,4488,7
+"245","S36E11","Rachel Talalay","Steven Moffat",42,13,15,15,458,3929,6.9
+"246","S36E12","Rachel Talalay","Steven Moffat",45,23,17,17,413,4449,9.1
+"247","S36E13","Rachel Talalay","Steven Moffat",60,22,9,9,438,5067,8.9
+"248","S36E2","Other","Other",49,10,16,16,398,4819,7.8
+"249","S36E3","Other","Other",45,20,17,17,434,4077,7.2
+"250","S36E4","Other","Other",44,13,21,21,462,3839,7.2
+"251","S36E5","Charles Palmer","Other",44,14,16,16,497,4490,7.3
+"252","S36E6","Other","Steven Moffat",44,17,16,16,363,3933,8
+"253","S36E7","Other","Other",48,18,21,21,442,4205,8.3
+"254","S36E8","Other","Toby Whithouse",46,15,15,15,241,4224,7.6
+"255","S36E9","Other","Mark Gatiss",44,18,13,13,325,3732,7.2
+"256","S37E1","Other","Chris Chibnall",60,18,29,29,483,5400,8.2
+"257","S37E10","Other","Chris Chibnall",49,9,11,11,407,4857,6.2
+"258","S37E11","Other","Chris Chibnall",50,22,17,17,514,5132,5.3
+"259","S37E2","Other","Chris Chibnall",60,9,19,19,506,5366,6.9
+"260","S37E3","Other","Other",48,15,20,20,484,5572,6
+"261","S37E4","Other","Chris Chibnall",49,13,26,26,528,5273,6.9
+"262","S37E5","Other","Chris Chibnall",49,12,13,13,576,6120,5
+"263","S37E6","Other","Other",50,16,12,12,478,5234,5
+"264","S37E7","Other","Other",50,13,18,18,532,6080,6.5
+"265","S37E8","Other","Other",48,14,11,11,485,5872,6.2
+"266","S37E9","Other","Other",46,11,10,10,444,4961,5.7
+"267","S38E1","Jamie Magnus Stone","Chris Chibnall",60,32,30,30,527,5566,6.5
+"268","S38E10","Jamie Magnus Stone","Chris Chibnall",66,21,14,14,325,5245,5.1
+"269","S38E11","Other","Chris Chibnall",71,20,26,26,595,6635,5.9
+"270","S38E2","Other","Chris Chibnall",61,19,19,19,406,5622,6.4
+"271","S38E3","Other","Other",46,14,14,14,521,5356,4.1
+"272","S38E4","Other","Other",50,22,18,18,412,5450,6.4
+"273","S38E5","Other","Other",49,17,18,18,504,5466,7.4
+"274","S38E6","Jamie Magnus Stone","Other",50,16,13,13,500,5012,5.1
+"275","S38E7","Other","Other",49,20,20,20,357,4190,5.6
+"276","S38E8","Other","Other",49,12,14,14,453,4650,7
+"277","S38E9","Jamie Magnus Stone","Chris Chibnall",49,20,14,14,405,4261,6.4
+"278","S39E1","Jamie Magnus Stone","Chris Chibnall",50,26,20,20,435,4697,6.7
+"279","S39E2","Jamie Magnus Stone","Chris Chibnall",60,23,17,17,491,5353,7.1
+"280","S39E3","Other","Chris Chibnall",49,20,23,23,350,4993,6
+"281","S39E4","Jamie Magnus Stone","Other",56,19,13,13,422,5017,7.8
+"282","S39E5","Other","Chris Chibnall",51,30,23,23,360,5151,6.2
+"283","S39E6","Other","Chris Chibnall",59,29,20,20,481,5974,5.3
+"284","S39E7","Other","Chris Chibnall",58,10,12,12,550,6114,6.7
+"285","S39E8","Other","Other",48,14,10,10,359,4091,4.6
+"286","S3E1","Derek Martinus","Other",97,7,14,14,976,9351,6.475
+"287","S3E2","Derek Martinus","Terry Nation",25,16,13,13,997,12840,7.1
+"288","S3E3","Other","Other",101,55,58,58,2383,26468,7.2
+"289","S3E4","Douglas Camfield","Terry Nation",293,27,14,14,1006,11350,7.70833333333333
+"290","S3E5","Other","Other",100,21,13,13,1674,19494,7.325
+"291","S3E6","Other","Other",99,12,12,12,918,10843,7.1
+"292","S3E7","Other","Other",98,18,13,13,1121,12701,6.45
+"293","S3E8","Other","Other",97,17,22,22,1097,10866,6.25
+"294","S3E9","Christopher Barry","Other",101,25,22,22,860,9917,6.85
+"295","S4E1","Other","Brian Hayles",99,17,25,25,1217,12302,6.4
+"296","S4E2","Derek Martinus","Other",94,27,17,17,1097,11055,7.85
+"297","S4E3","Christopher Barry","David Whitaker",146,16,13,13,1444,14133,8.2
+"298","S4E4","Other","Other",96,19,24,24,1123,10402,6.475
+"299","S4E5","Other","Other",96,19,29,29,1100,9770,6
+"300","S4E6","Other","Other",98,19,15,15,1031,9567,7.375
+"301","S4E7","Other","Other",95,23,20,20,1051,10212,7.125
+"302","S4E8","Other","Other",146,22,30,30,1390,14206,7.43333333333333
+"303","S4E9","Derek Martinus","David Whitaker",174,19,38,38,1485,14531,8
+"304","S5E1","Other","Other",97,14,10,10,943,9440,8.2
+"305","S5E2","Other","Other",142,14,13,13,1373,12629,7.3
+"306","S5E3","Derek Martinus","Brian Hayles",144,16,14,14,1522,14576,7.36666666666667
+"307","S5E4","Barry Letts","David Whitaker",141,28,33,33,1639,16519,7.75
+"308","S5E5","Douglas Camfield","Other",148,20,30,30,1832,17136,8.08333333333333
+"309","S5E6","Other","Other",142,19,29,29,1604,15608,7.73333333333333
+"310","S5E7","Other","Other",137,23,17,17,1512,14787,6.9
+"311","S6E1","Other","Other",120,19,19,19,1490,14124,6.2
+"312","S6E2","David Maloney","Other",103,16,20,20,1048,9758,7.86
+"313","S6E3","Douglas Camfield","Other",187,36,41,41,2100,20431,8.025
+"314","S6E4","David Maloney","Robert Holmes",91,14,15,15,1102,9322,6.55
+"315","S6E5","Other","Brian Hayles",147,18,18,18,1539,14223,7.26666666666667
+"316","S6E6","Other","Robert Holmes",145,16,23,23,1699,18710,5.3
+"317","S6E7","David Maloney","Other",241,38,39,39,2404,24811,8.41
+"318","S7E1","Derek Martinus","Robert Holmes",97,26,26,26,848,8931,8.1
+"319","S7E2","Other","Malcolm Hulke",166,29,30,30,1587,15990,7.77142857142857
+"320","S7E3","Other","Other",174,28,29,29,1565,15129,7.38571428571429
+"321","S7E4","Douglas Camfield","Other",168,23,12,12,1788,17266,8.32857142857143
+"322","S8E1","Barry Letts","Robert Holmes",96,20,22,22,940,9180,7.7
+"323","S8E2","Other","Other",148,32,34,34,1355,13403,7.48333333333333
+"324","S8E3","Other","Bob Baker, Dave Martin",97,22,18,18,824,8018,7.225
+"325","S8E4","Michael E. Briant","Malcolm Hulke",145,27,27,27,1465,14899,6.96666666666667
+"326","S8E5","Christopher Barry","Other",121,33,21,21,1184,12259,7.72
+"327","S9E1","Other","Other",96,27,21,21,927,9919,7.75
+"328","S9E2","Other","Brian Hayles",98,11,15,15,738,8234,7.525
+"329","S9E3","Michael E. Briant","Malcolm Hulke",148,38,30,30,1281,12768,7.75
+"330","S9E4","Christopher Barry","Bob Baker, Dave Martin",146,20,33,33,1368,13638,6.61666666666667
+"331","S9E5","Other","Other",148,24,26,26,1601,16731,6.66666666666667
