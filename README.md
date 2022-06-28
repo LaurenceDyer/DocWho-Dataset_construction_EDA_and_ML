@@ -6,5 +6,4 @@ Using R and Python.
 
 This project written up at:
 
-![network](Rmarkdown/Doc_Who_Network_small.png)
 ![overlap](Rmarkdown/Episode_overlap.png)
