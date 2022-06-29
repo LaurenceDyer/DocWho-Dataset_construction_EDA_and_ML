@@ -2,7 +2,7 @@
 
 Repo showing various data science applications to webscraped and processed Doctor Who episodes from the modern and classic seasons, including python webcrawling for data, large scale text processing, exploratory data analysis and visualisation, network construction and analysis and various machine learning applications.
 
-Using R and Python.
+Created using R and Python.
 
 This project written up at: http://lawrence-archer.co.uk/DocWhoEDA
 
