@@ -43,12 +43,14 @@ require(jsonlite)
 require(reshape2)
 require(ggplot2)
 require(ggrepel)
+require(RColorBrewer)
 require(cowplot)
 require(tidyr)
 require(knitr)
 require(kableExtra)
 require(corpus)
 require(wordcloud)
+require(treemapify)
 require(tm)
 require(RColorBrewer)
 require(quanteda)
@@ -387,9 +389,28 @@ writ_rate_view <- aggregate(cbind(Rating,Views)~Writer,all_ext_p_un,FUN=mean)
 writ_rate_view <- writ_rate_view[order(writ_rate_view$Rating, decreasing = T),]
 temp_rate_view <- writ_rate_view[writ_rate_view$Writer %in% writerDat_f$Writer,]
 writerDat_f$Writer <- factor(writerDat_f$Writer, levels = temp_rate_view$Writer)
-g1 <- ggplot(writerDat_f, aes(x=Writer,y=Rating, fill=Writer)) + 
-          geom_boxplot() +
+
+
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+writerCols <- writerDat_f[!duplicated(writerDat_f$Writer),]
+n <- length(writerCols$Writer)
+
+writerCols$Col <- hcl.colors(n, "Spectral")
+
+col <- as.character(writerCols$Col)
+names(col) <- as.character(writerCols$Writer)
+col <- col[!duplicated(col)]
+
+writerDat_f <- merge(writerDat_f,writerCols[,c(1,6)],by="Writer")
+
+g1 <- ggplot(writerDat_f, aes(x=Writer,y=Rating, fill=Col)) + 
+          geom_boxplot(aes(group=Writer,colour=Col)) +
           geom_point(alpha=0.5, position = position_jitter(width = 0.15)) +
+          scale_colour_manual(values = col) +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
           panel.background = element_blank(), legend.position = "None") + ggtitle("Writers by rating")
@@ -398,9 +419,11 @@ g1 <- ggplot(writerDat_f, aes(x=Writer,y=Rating, fill=Writer)) +
 writ_rate_view <- writ_rate_view[order(writ_rate_view$Views, decreasing = T),]
 temp_rate_view <- writ_rate_view[writ_rate_view$Writer %in% writerDat_f$Writer,]
 writerDat_f$Writer <- factor(writerDat_f$Writer, levels = temp_rate_view$Writer)
-g2 <- ggplot(writerDat_f, aes(x=Writer,y=Views, fill=Writer)) + 
-          geom_boxplot() +
+
+g2 <- ggplot(writerDat_f, aes(x=Writer,y=Views, fill=Col)) + 
+          geom_boxplot(aes(group=Writer,colour=Col)) +
           geom_point(alpha=0.5, position = position_jitter(width = 0.15)) +
+          scale_colour_manual(values = col) +
           theme_minimal() +
           theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
           panel.background = element_blank(), legend.position = "None") + ggtitle("Writers by viewership") + ylab("Views (Millions)")
@@ -633,20 +656,38 @@ Because we have a total of 3005 characters, we'll need to cut things down immedi
 <div style="width: 100%;">
 <div style="width: 50%; float: left;">
 ```{r Verbiosity1, echo = FALSE}
+
 char_pct <- as.numeric(table(allEps$Character)[order(table(allEps$Character))])
 char_cats <- names(table(allEps$Character)[order(table(allEps$Character))])
 char_vals <- data.frame(pct=char_pct, cat=char_cats)
 
 char_vals <- char_vals[order(char_vals$pct, decreasing = T),]
 
-suppressWarnings(treemap(head(char_vals,50), index="cat", vSize="pct", title = "Who has the most lines?", palette = brewer.pal(n=16, "Set3")))
+n <- length(char_vals$cat)
+char_vals$Col<- hcl.colors(n, "Spectral")
+
+col <- as.character(char_vals$Col)
+names(col) <- as.character(char_vals$Character)
+
+suppressWarnings(ggplot(head(char_vals,50), aes(area=pct,fill=Col, label = cat))) +
+  geom_treemap() +
+  scale_color_manual(values=col) +
+  geom_treemap_text(colour = "white",
+                    place = "centre",
+                    size = 15) + ggtitle("Who has the most lines?") + theme(legend.position="None")
+
 ```
 </div>
 <div style="width: 50%; float: left;">
 ```{r Verbiosity2, echo = FALSE}
 char_vals2 <- char_vals[!grepl("DOCTOR",char_vals$cat),]
 
-suppressWarnings(treemap(head(char_vals2,50), index="cat", vSize="pct", title="... Other than the doctor?", palette = brewer.pal(n=16, "Set3")))
+suppressWarnings(ggplot(head(char_vals2,50), aes(area=pct,fill=Col, label = cat))) +
+  geom_treemap() +
+  scale_color_manual(values=col) +
+  geom_treemap_text(colour = "white",
+                    place = "centre",
+                    size = 15) + ggtitle("...Other than the doctor?") + theme(legend.position="None")
 ```
 </div>
 
@@ -664,7 +705,7 @@ We can also calculate which characters have the most words per episode, and the 
 ```{r Norm1, echo = F, fig.align="center"}
 
 colnames(chars_by_ep) <- c("Character","Episodes")
-colnames(char_vals) <- c("Lines","Character")
+colnames(char_vals) <- c("Lines","Character","Col")
 
 chars_norm <- merge(chars_by_ep, char_vals, by = "Character")
 
@@ -674,8 +715,12 @@ chars_norm <- chars_norm[order(chars_norm$LinesPerEpisode, decreasing = T),]
 chars_plot <- head(chars_norm,15)
 chars_plot$Character <- factor(chars_plot$Character, levels = chars_plot$Character)
 
-g1 <- ggplot(chars_plot, aes(x=Character,y=LinesPerEpisode,fill=Character)) + 
+col <- as.character(chars_plot$Col)
+names(col) <- as.character(chars_plot$Character)
+
+g1 <- ggplot(chars_plot, aes(x=Character,y=LinesPerEpisode,fill=Col)) + 
           geom_bar(stat="identity") +
+          scale_color_manual(values=col) +
           theme_minimal() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), legend.position = "None") + ggtitle("All Characters\nLines Per Episode")
@@ -688,8 +733,12 @@ chars_norm2 <- chars_norm[chars_norm$Episodes > 1,]
 chars_plot <- head(chars_norm2,15)
 chars_plot$Character <- factor(chars_plot$Character, levels = chars_plot$Character)
 
-g2 <- ggplot(chars_plot, aes(x=Character,y=LinesPerEpisode,fill=Character)) + 
+col <- as.character(chars_plot$Col)
+names(col) <- as.character(chars_plot$Character)
+
+g2 <- ggplot(chars_plot, aes(x=Character,y=LinesPerEpisode,fill=Col)) + 
         geom_bar(stat="identity") +
+        scale_color_manual(values=col) +
         theme_minimal() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), legend.position = "None") + ggtitle("Repeat Characters \nLines per Episode")
@@ -711,11 +760,17 @@ chars_norm2 <- chars_norm2[order(chars_norm2$WordsPerLine, decreasing = T),]
 chars_plot <- head(chars_norm2,15)
 chars_plot$Character <- factor(chars_plot$Character, levels = chars_plot$Character)
 
-g3 <- ggplot(chars_plot, aes(x=Character,y=WordsPerLine,fill=Character)) + 
+col <- as.character(chars_plot$Col)
+names(col) <- as.character(chars_plot$Character)
+
+g3 <- ggplot(chars_plot, aes(x=Character,y=WordsPerLine,fill=Col)) + 
         geom_bar(stat="identity") +
+        scale_color_manual(values=col) +
         theme_minimal() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
                       panel.background = element_blank(), legend.position = "None") + ggtitle("Repeat Monologues \nWords per Line")
+
+
 
 grid.arrange(g1,g2,g3,ncol=3)
 
@@ -760,30 +815,42 @@ docs_norm$Char <- gsub("TOR","",docs_norm$Character)
 docs_norm$Char <- factor(docs_norm$Char, levels = docs_norm$Char)
 
 docs_norm$LinesPerEpisode <- as.numeric(docs_norm$Lines)/as.numeric(docs_norm$Series_Episode)
+n <- length(docs_norm$Character)
+docs_norm$Cols <- hcl.colors(n, "Spectral")
 
+col <- as.character(docs_norm$Col)
+names(col) <- as.character(docs_norm$Character)
 
 grid.arrange(ggplot(docs_norm, aes(x=Char,y=Lines,group="")) + 
-               geom_point(aes(colour=Char)) + geom_smooth(se=F) + 
+                geom_point(aes(fill=Char,colour=Cols),size=2.5) + geom_smooth(se=F) + 
+                scale_fill_manual(values=col) +
                 ggtitle("Total Lines") +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
-                      panel.background = element_blank()),
+                      panel.background = element_blank(),legend.position = "None"),
+             
              ggplot(docs_norm, aes(x=Char,y=Series_Episode,group="")) + geom_smooth(se=F) + 
-                geom_point(aes(colour=Char)) + ggtitle("Episodes") +
+                geom_point(aes(fill=Char,colour=Cols),size=2.5) + ggtitle("Episodes") +
+                scale_fill_manual(values=col) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
-                      panel.background = element_blank()),
+                      panel.background = element_blank(),legend.position = "None"),
+             
              ggplot(docs_norm, aes(x=Char,y=LinesPerEpisode,group="")) + geom_smooth(se=F) + 
-                geom_point(aes(colour=Char)) + ggtitle("Lines per Episode") +
+                geom_point(aes(fill=Char,colour=Cols),size=2.5) + ggtitle("Lines per Episode") +
+                scale_fill_manual(values=col) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
-                      panel.background = element_blank()),
+                      panel.background = element_blank(),legend.position = "None"),
+             
              ggplot(docs_norm, aes(x=Char,y=WordsPerLine,group="")) + geom_smooth(se=F) + 
-                geom_point(aes(colour=Char)) + ggtitle("Words per Line") +
+                geom_point(aes(fill=Char,colour=Cols),size=2.5) + ggtitle("Words per Line") +
+                scale_fill_manual(values=col) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 50, hjust = 1, size = 7), panel.grid.minor = element_blank(),
-                      panel.background = element_blank()),
+                      panel.background = element_blank(),legend.position = "None"),
     ncol=4)
+
 
 ```
 
@@ -795,14 +862,22 @@ popDoc <- allEps[,c(1,6,15)]
 
 popDoc <- popDoc[!duplicated(popDoc$Series_Episode),]
 
-
-
 popDoc$DoctorWho <- gsub("Doctor_","DOC",popDoc$DoctorWho)
 
 popDoc$DoctorWho <- factor(popDoc$DoctorWho, levels = paste("DOC",c(1:7,9:13),sep=""))
 
-suppressWarnings(print(ggplot(popDoc, aes(x=DoctorWho,y=Rating)) +
-                         geom_point(position = position_jitter(width = 0.15)) + geom_boxplot(aes(fill=DoctorWho),alpha=0.5,outlier.shape = NA) +
+doc_col_t <- docs_norm[,c(7,9)]
+colnames(doc_col_t) <- c("DoctorWho","Cols")
+popDoc <- merge(popDoc,doc_col_t,by="DoctorWho")
+
+col <- popDoc[!duplicated(popDoc$DoctorWho),]$Cols
+names(col) <- popDoc[!duplicated(popDoc$DoctorWho),]$Cols
+
+
+suppressWarnings(print(ggplot(popDoc, aes(x=DoctorWho,y=Rating,fill=DoctorWho)) +
+                         geom_point(position = position_jitter(width = 0.15)) + 
+                         geom_boxplot(alpha=0.5,outlier.shape = NA) +
+                         scale_colour_manual(values=col) +
                          theme_minimal() + theme(legend.position = "None") + ggtitle("Most Popular Doctors")
                          ))
 
@@ -852,9 +927,17 @@ allEps_charR_lines$Character <- factor(allEps_charR_lines$Character, levels =
 p.vals$Character <- factor(p.vals$Character, levels = 
                                          c("ROSE","MARTHA","AMY","CLARA","RORY","YASMIN","GRAHAM","BILL","DOCTOR","MASTER","DALEK","CYBERMAN"))
 
-suppressWarnings(ggplot(allEps_charR_lines, aes(x=Script,y=Rating)) + geom_point(aes(colour=Character),alpha = 0.3) +
-  geom_line(stat = "smooth", method="lm",se=F, alpha = 0.3) +
+allEps_charR_lines <- merge(allEps_charR_lines,chars_norm[,c(1,4)],by="Character")
+
+col <- allEps_charR_lines[!duplicated(allEps_charR_lines$Character),]$Col
+names(col) <- allEps_charR_lines[!duplicated(allEps_charR_lines$Character),]$Col
+
+col
+
+suppressWarnings(ggplot(allEps_charR_lines, aes(x=Script,y=Rating)) + geom_point(aes(colour=Col),alpha = 0.5) +
+  geom_line(stat = "smooth", method="lm",se=F, alpha = 0.5) +
   theme_minimal() + geom_text(data=p.vals, aes(label=paste("p.val = ",p.vals,sep=""))) +
+  scale_fill_manual(values=col) +
   theme(legend.position = "none") +
   facet_wrap(~Character, scales = "free_x"))
 
@@ -1250,9 +1333,75 @@ top_feats_ord_tf <- top_feats_df_tf[,c(match(c(top_chars$Character),colnames(top
 DT::datatable(top_feats_ord_tf, options = list(
   pageLength=10, scrollX='400px', doms = "t"))
 
-
 ```
 Interesting! We see "haroon" pop up from DOC3's attempts at speaking an alien language, we see "Shush" from DOC1's attempts to keep his companions quiet. DOC5 references the tardis most often. Looking down the list, we see some classics - "Spoiler" and "SWeetie" for River. Rose, Martha and Donna all have the word "god" in their lists. Susan has "grandfather", her common nicknme for the doctor, etc. Looks good!
+
+Perhaps there are some themes that run through particular episodes that make them very popular. We might be able to find these by looking at the top thousand words in each episode and assigning them that rating's episode. Then, we average each word out over each of each of its appearances to find a combined total rating for each word.
+
+Doing this we can arrive at around 15,000 word stems that we can assign a rating to. A lot of these words only appear once, so we'll try to limit our analysis to only words with a frequency greater than 100.
+
+We'll also do our analysis once with names, and once without - Perhaps we will find some characters that are more popular when spoken about than when they are speaking themselves. To get a good idea of word frequency, we'll also add a size parameter, with larger sizes indicating more frequent words.
+
+```{r TFID and Rating, echo = F, fig.align='center', fig.width=12, fig.height=6, warning=FALSE, message=FALSE}
+
+all_tokens <- all_scripts %>% 
+    tokens(
+        remove_numbers = TRUE,
+        remove_punct = TRUE,
+        include_docvars = TRUE,
+        remove_symbols = TRUE
+        )
+
+all_freq_mat <- dfm(all_tokens, 
+               tolower = TRUE,
+               remove = stopwords(source = "smart"))
+
+top_feats_title <- topfeatures(all_freq_mat, 1000, group = all_freq_mat@docvars$Title)
+
+top_feats_title_tf <- as.data.frame(sapply(top_feats_title, 
+                                    function(x) names(x)))
+
+top_feats_title_tf <- as.data.frame(t(top_feats_title_tf))
+top_feats_title_tf$Title <- rownames(top_feats_title_tf)
+top_feats_title_tf <- merge(top_feats_title_tf, allEps[,c(11,15)][!duplicated(allEps[,c(11,15)]$Title),],
+                            by="Title", all.y=F)
+
+top_feats_title_tf_rating <- melt(top_feats_title_tf[,-1], id.vars = "Rating")
+top_feats_title_tf_rating <-top_feats_title_tf_rating[,-2]
+top_feats_title_tf_rating <- top_feats_title_tf_rating[!is.na(top_feats_title_tf_rating$Rating),]
+
+top_feats_title_tf_agg <- aggregate(Rating~value,top_feats_title_tf_rating,mean)
+
+wordFreq <- as.data.frame(featfreq(all_freq_mat))
+
+wordFreq$value <- rownames(wordFreq)
+
+word_frame <- merge(top_feats_title_tf_agg,wordFreq,by="value")
+word_frame_f <- word_frame[word_frame$`featfreq(all_freq_mat)` > 100,]
+colnames(word_frame_f) <- c("Word","Rating","Freq")
+
+word_frame_f$Word <- factor(word_frame_f$Word, levels = rev(unique(word_frame_f[order(word_frame_f$Rating,decreasing = T),]$Word)))
+word_frame_f <- word_frame_f[order(word_frame_f$Rating, decreasing = T),]
+
+g1 <- ggplot(head(word_frame_f,30), aes(y=Word,x=Rating,size=Freq)) +
+          geom_point() + ggtitle("With names...") +
+  theme_minimal() + theme(legend.position = "None") + xlab("Rating Score")
+
+word_frame_f <- word_frame_f[!word_frame_f$Word %in% names,]
+word_frame_f <- word_frame_f[-c(2,3,4),]
+
+word_frame_f <- word_frame_f[order(word_frame_f$Rating, decreasing = T),]
+
+g2 <- ggplot(head(word_frame_f,30), aes(y=Word,x=Rating,size=Freq)) +
+          geom_point() + ggtitle("...and without.") +
+  theme_minimal() + theme(legend.position = "None") + xlab("Rating Score")
+
+
+grid.arrange(g1,g2,ncol=2)
+
+
+```
+Well, interesting! Christmas, merry and stories are very popular, probably owing to their use in christmas-themed one-offs which are always enjoyed by fans. We also see that "Davros" stands out as a very popular character to reference, along with dalek, daleks and exterminate. Surprisingly, monsters appear to come up very frequently here, with words such as yeti, mummy, angels (A stone statue that moves when you blink) and ghosts. Monster of the week is clearly a popular trope!
 
 ## Sentiment Analysis
 
@@ -1581,7 +1730,7 @@ write.csv("Rating_Reg.csv", x = ratingReg)
 
 Two of these features, writer and director, are categorical. As such, we'll need to use a way to encode them for input into the middle. Another concern with these two features is that there are many writers/directors with a low episode number, just one or two. It is likely beneficial to group many of these together under an "Other" category.
 
-We'll attempt to create our regression model using the python sklearn toolkit, and we'll test out both the Lasso and ElasticNet models.
+We’ll attempt to create our regression model using the python sklearn toolkit, and we’ll test out the Lasso regularization model.
 
 We have used target encoding to encode our nominal categories, and after hyperparameter tuning of the parameter alpha using K-fold cross validation, we manage to achieve a MAE of roughly -0.608. Applying this to test data the model has not seen before, we achieved a 0.806, with an r2 of 0.25, which is not incredible, but would probably allow us to differentiate episodes between the worst episodes and the 9/10s. Let's examine some of the coefficients of our Lasso model:
 
